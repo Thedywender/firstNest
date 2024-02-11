@@ -1,31 +1,50 @@
+import { AnimalsData } from './data/animalData';
+import { Animals, AnimalsOmitId } from 'src/interfaces/animal';
+
 import { Body, Controller, Get, HttpCode, Param, Put } from '@nestjs/common';
 
 @Controller('animals')
 export class AnimalsController {
-  @HttpCode(202) // um método padrão  para retornar um status para a response
-  @Get() // estás implicito dentro dos pararenteses a rota '/'
+  private animals: Animals[] = AnimalsData; // Armazenamento dos animais em memória
+
+  constructor() {
+    this.animals = AnimalsData;
+  }
+
+  @HttpCode(202)
+  @Get()
   findAll() {
-    return { animals: 'Animals must be defended' };
+    return this.animals;
   }
 
   @Get(':id')
-  findById(@Param('id') id: number) {
-    return {
-      id: id,
-      name: 'Mico Leão Dourado',
-      situation: 'almost extintion',
-      quantity: 201,
-    };
+  findById(@Param('id') id: string) {
+    const animal = this.animals.find((animal) => animal.id === id);
+    if (!animal) {
+      return { message: 'Animal not found' };
+    }
+    return animal;
   }
 
-  @Put(':id')
-  update(@Param('id') id: number, @Body() body: { quantity: number }) {
-    const animalExisting = this.findById(id);
+  @Put()
+  create(@Body() body: AnimalsOmitId) {
+    const animalId = (this.animals.length + 1).toString();
+    const newAnimal = { id: animalId, ...body };
+    this.animals.push(newAnimal);
+    return newAnimal;
+  }
 
-    if (!animalExisting) {
-      return { message: 'Animal not foud' };
+  @Put(':id/updateQuantity')
+  updateQuantity(@Param('id') id: string, @Body() body: { quantity: number }) {
+    const animal = this.animals.find((animal) => animal.id === id); // Busca o animal pelo ID
+
+    if (!animal) {
+      return { message: 'Animal not found' }; // Retorna 'Animal not found' se não encontrar o animal
     }
-    const newQuantity = animalExisting.quantity + body.quantity;
-    return { newQuantity };
+
+    // Atualiza a quantidade do animal com a quantidade fornecida no corpo da solicitação
+    animal.quantity += body.quantity;
+
+    return { newQuantity: animal.quantity }; // Retorna a nova quantidade do animal
   }
 }
