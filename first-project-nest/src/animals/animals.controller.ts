@@ -33,8 +33,11 @@ export class AnimalsController {
   }
 
   @Put(':id/updateQuantity')
-  updateQuantity(@Param('id') id: string, @Body() quantity: number) {
-    this.animalsService.update(id, quantity);
+  updateQuantity(
+    @Param('id') id: string,
+    @Body() uppdate: { quantity: number },
+  ) {
+    this.animalsService.update(id, uppdate);
     return this.animalsService.findById(id);
   }
 }

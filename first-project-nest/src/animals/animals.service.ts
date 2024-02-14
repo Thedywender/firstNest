@@ -21,10 +21,10 @@ export class AnimalsService {
     return created;
   }
 
-  update(id: string, quantity: number) {
+  update(id: string, uppdate: { quantity: number }) {
     const animal = this.animals.find((animal) => animal.id === id);
     if (animal) {
-      animal.quantity += quantity;
+      animal.quantity += uppdate.quantity;
     }
   }
 
