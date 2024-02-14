@@ -1,7 +1,10 @@
-interface Animals {
+class Animals {
   id: string;
+
   name: string;
+
   situation: string;
+
   quantity: number;
 }
 
